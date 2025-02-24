@@ -53,6 +53,12 @@ def model_load(
             client = openai.OpenAI(
                 api_key="ollama", base_url="http://localhost:11434/v1"
             )
+        case "OpenRouter":
+            client = openai.OpenAI(
+                api_key=api_key if api_key else os.getenv(
+                    "OPENROUTER_API_KEY"),
+                base_url="https://openrouter.ai/api/v1"
+            )
         case _:
             client = openai.OpenAI(
                 api_key=api_key if api_key else os.getenv("OPENAI_API_KEY")

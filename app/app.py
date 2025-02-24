@@ -87,6 +87,7 @@ def update_model(endpoint):
         "TogetherAI": "Qwen/Qwen2-72B-Instruct",
         "Ollama": "llama3",
         "CUSTOM": "",
+        "OpenRouter": "google/gemini-2.0-flash-exp:free",
     }
     if endpoint == "CUSTOM":
         base = gr.update(visible=True)
@@ -237,15 +238,18 @@ with gr.Blocks(theme="soft", css=CSS, fill_height=True) as demo:
         with gr.Column(scale=1) as menubar:
             endpoint = gr.Dropdown(
                 label="Endpoint",
-                choices=["OpenAI", "Groq", "TogetherAI", "Ollama", "CUSTOM"],
+                choices=["OpenAI", "Groq", "TogetherAI",
+                         "Ollama", "CUSTOM", "OpenRouter"],
                 value="Ollama",
             )
             choice = gr.Checkbox(
                 label="Additional Endpoint",
                 info="Additional endpoint for reflection",
             )
-            model = gr.Textbox(
+            model = gr.Dropdown(
                 label="Model",
+                choices=["gemma2:9b-instruct-fp16", "mistral-small:latest",
+                         "gemma2:9b-instruct-q8_0", "google/gemini-2.0-flash-exp:free",],
                 value="gemma2:9b-instruct-fp16",
             )
             api_key = gr.Textbox(
@@ -262,11 +266,14 @@ with gr.Blocks(theme="soft", css=CSS, fill_height=True) as demo:
                         "TogetherAI",
                         "Ollama",
                         "CUSTOM",
+                        "OpenRouter",
                     ],
                     value="Ollama",
                 )
-                model2 = gr.Textbox(
+                model2 = gr.Dropdown(
                     label="Model",
+                    choices=["gemma2:9b-instruct-fp16", "mistral-small:latest",
+                             "gemma2:9b-instruct-q8_0", "google/gemini-2.0-flash-exp:free",],
                     value="gemma2:9b-instruct-fp16",
                 )
                 api_key2 = gr.Textbox(
@@ -293,8 +300,8 @@ with gr.Blocks(theme="soft", css=CSS, fill_height=True) as demo:
                 max_tokens = gr.Slider(
                     label="Max tokens Per Chunk",
                     minimum=512,
-                    maximum=2046,
-                    value=1000,
+                    maximum=8196,
+                    value=2048,
                     step=8,
                 )
                 temperature = gr.Slider(
