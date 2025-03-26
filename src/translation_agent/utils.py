@@ -84,9 +84,16 @@ def one_chunk_initial_translation(
         str: The translated text.
     """
 
-    system_message = f"You are an expert linguist, specializing in translation from {source_lang} to {target_lang}."
+    system_message = f"You are an expert professional translator with deep knowledge of both {source_lang} and {target_lang}. You have native-level fluency in both languages and understand cultural nuances, idiomatic expressions, and specialized terminology across various domains."
 
-    translation_prompt = f"""This is an {source_lang} to {target_lang} translation, please provide the {target_lang} translation for this text. \
+    translation_prompt = f"""Please translate the following text from {source_lang} to {target_lang} with high accuracy: \n\
+Instructions: \n\
+- Preserve the original meaning, tone, and context completely \n\
+- Maintain formatting, paragraph breaks, and bullet points as in the original  \n\
+- When encountering specialized terminology, prioritize standard domain-specific translations \n\
+- For ambiguous phrases, select the most appropriate translation based on context \n\
+- Ensure names, numbers, and dates are accurately transferred without modification \n\
+- Do not add explanatory notes or alternative translations \n\
 Do not provide any explanations or text apart from the translation.
 {source_lang}: {source_text}
 
@@ -118,12 +125,13 @@ def one_chunk_reflect_on_translation(
         str: The LLM's reflection on the translation, providing constructive criticism and suggestions for improvement.
     """
 
-    system_message = f"You are an expert linguist specializing in translation from {source_lang} to {target_lang}. \
-You will be provided with a source text and its translation and your goal is to improve the translation."
-
+    system_message = f"You are a senior professional translator and translation reviewer with extensive expertise in both {source_lang} and {target_lang}.\
+You have advanced degrees in translation studies, 15+ years of professional experience in translation quality assessment, and deep cultural knowledge of {country}.\
+Your feedback is valued for its precision, clarity, and actionable nature."
+    
     if country != "":
-        reflection_prompt = f"""Your task is to carefully read a source text and a translation from {source_lang} to {target_lang}, and then give constructive criticism and helpful suggestions to improve the translation. \
-The final style and tone of the translation should match the style of {target_lang} colloquially spoken in {country}.
+        reflection_prompt = f"""Analyze the following translation from {source_lang} to {target_lang} and provide expert improvement suggestions. \
+TARGET AUDIENCE: Native {target_lang} speakers in {country}.
 
 The source text and initial translation, delimited by XML tags <SOURCE_TEXT></SOURCE_TEXT> and <TRANSLATION></TRANSLATION>, are as follows:
 
@@ -135,11 +143,32 @@ The source text and initial translation, delimited by XML tags <SOURCE_TEXT></SO
 {translation_1}
 </TRANSLATION>
 
-When writing suggestions, pay attention to whether there are ways to improve the translation's \n\
-(i) accuracy (by correcting errors of addition, mistranslation, omission, or untranslated text),\n\
-(ii) fluency (by applying {target_lang} grammar, spelling and punctuation rules, and ensuring there are no unnecessary repetitions),\n\
-(iii) style (by ensuring the translations reflect the style of the source text and take into account any cultural context),\n\
-(iv) terminology (by ensuring terminology use is consistent and reflects the source text domain; and by only ensuring you use equivalent idioms {target_lang}).\n\
+EVALUATION CATEGORIES: \n\
+1. ACCURACY - Identify any: \n\
+   • Mistranslations (incorrect meaning) \n\
+   • Omissions (missing content) \n\
+   • Additions (inserted content not in source) \n\
+   • Untranslated elements \n\
+
+2. FLUENCY - Evaluate: \n\
+   • Grammar correctness \n\ 
+   • Natural sentence structure in {target_lang} \n\
+   • Appropriate punctuation \n\
+   • Spelling \n\
+   • Unnecessary repetition \n\
+
+3. STYLE & TONE - Assess: \n\
+   • Appropriateness for {country} cultural context \n\
+   • Consistency with source text register (formal/informal) \n\
+   • Naturalness for native speakers in {country} \n\
+   • Appropriate cultural adaptations \n\
+
+4. TERMINOLOGY - Review: \n\
+   • Domain-specific terminology accuracy \n\
+   • Consistency throughout the text \n\
+   • Idiomatic expressions rendered appropriately for {target_lang} \n\
+   • Technical terms handled according to {target_lang} conventions \n\
+
 
 Write a list of specific, helpful and constructive suggestions for improving the translation.
 Each suggestion should address one specific part of the translation.
@@ -193,10 +222,11 @@ def one_chunk_improve_translation(
         str: The improved translation based on the expert suggestions.
     """
 
-    system_message = f"You are an expert linguist, specializing in translation editing from {source_lang} to {target_lang}."
+    system_message = f"You are a senior professional translation editor with specialized expertise in {source_lang}-{target_lang} translation. \
+You have extensive experience in applying linguistic feedback to refine translations while maintaining fidelity to source content. \
+Your edits consistently improve accuracy, fluency, cultural appropriateness, and terminological precision."
 
-    prompt = f"""Your task is to carefully read, then edit, a translation from {source_lang} to {target_lang}, taking into
-account a list of expert suggestions and constructive criticisms.
+    prompt = f"""TASK: Edit and improve the provided translation from {source_lang} to {target_lang} by systematically implementing expert feedback.
 
 The source text, the initial translation, and the expert linguist suggestions are delimited by XML tags <SOURCE_TEXT></SOURCE_TEXT>, <TRANSLATION></TRANSLATION> and <EXPERT_SUGGESTIONS></EXPERT_SUGGESTIONS> \
 as follows:
@@ -213,15 +243,28 @@ as follows:
 {reflection}
 </EXPERT_SUGGESTIONS>
 
-Please take into account the expert suggestions when editing the translation. Edit the translation by ensuring:
+EDITING INSTRUCTIONS: \n\
+1. First carefully analyze the source text, initial translation, and expert feedback \n\
+2. Methodically implement each expert suggestion, verifying against the source text \n\
+3. Beyond the specific suggestions, also correct any additional issues you identify \n\
 
-(i) accuracy (by correcting errors of addition, mistranslation, omission, or untranslated text),
-(ii) fluency (by applying {target_lang} grammar, spelling and punctuation rules and ensuring there are no unnecessary repetitions), \
-(iii) style (by ensuring the translations reflect the style of the source text)
-(iv) terminology (inappropriate for context, inconsistent use), or
-(v) other errors.
+ENSURE YOUR EDIT ADDRESSES: \n\
+• ACCURACY: Correct all mistranslations, omissions, additions, and untranslated elements \n\
+• FLUENCY: Apply proper {target_lang} grammar, syntax, spelling, and punctuation \n\
+• STYLE: Maintain the appropriate register, tone, and flow of the original text \n\
+• TERMINOLOGY: Use consistent, contextually appropriate terminology throughout \n\
+• CULTURAL ADAPTATION: Make appropriate adjustments for {target_lang} audiences \n\
+• FORMATTING: Preserve paragraph structure, bullet points, and other formatting elements \n\
 
-Output only the new translation and nothing else."""
+IMPORTANT GUIDELINES: \n\
+• Apply corrections with minimal disruption to well-translated portions \n\
+• Ensure consistency in terminology and style throughout the document \n\
+• Prioritize natural-sounding {target_lang} over literal translation \n\
+• Maintain all original information without adding or removing content \n\
+• Ensure specialized terms are correctly translated according to industry standards \n\
+
+OUTPUT INSTRUCTIONS: \n\
+Provide only the final edited translation with no explanations, comments, or other text."""
 
     translation_2 = get_completion(prompt, system_message)
 
